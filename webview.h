@@ -63,6 +63,9 @@ webview_dispatch(webview_t w, void (*fn)(webview_t w, void *arg), void *arg);
 // pointer, when using Win32 backend the pointer is HWND pointer.
 WEBVIEW_API void *webview_get_window(webview_t w);
 
+// Updates the decorated state of the native window. Must be called from the UI thread.
+WEBVIEW_API void webview_set_decorated(webview_t w, const int decorated);
+
 // Updates the title of the native window. Must be called from the UI thread.
 WEBVIEW_API void webview_set_title(webview_t w, const char *title);
 
@@ -489,6 +492,10 @@ public:
                     }),
                     new std::function<void()>(f),
                     [](void *f) { delete static_cast<dispatch_fn_t *>(f); });
+  }
+
+  void set_decorated(const bool decorated) {
+    gtk_window_set_decorated(GTK_WINDOW(m_window), decorated);
   }
 
   void set_title(const std::string title) {
@@ -1221,6 +1228,10 @@ WEBVIEW_API void webview_dispatch(webview_t w, void (*fn)(webview_t, void *),
 
 WEBVIEW_API void *webview_get_window(webview_t w) {
   return static_cast<webview::webview *>(w)->window();
+}
+
+WEBVIEW_API void webview_set_decorated(webview_t w, const int decorated) {
+  static_cast<webview::webview *>(w)->set_decorated(decorated);
 }
 
 WEBVIEW_API void webview_set_title(webview_t w, const char *title) {

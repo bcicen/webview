@@ -96,6 +96,10 @@ type WebView interface {
 	// NSWindow pointer, when using Win32 backend the pointer is HWND pointer.
 	Window() unsafe.Pointer
 
+	// SetDecorated updates the decorated state of the native window. Must be called from the UI
+	// thread.
+	SetDecorated(decorated bool)
+
 	// SetTitle updates the title of the native window. Must be called from the UI
 	// thread.
 	SetTitle(title string)
@@ -183,6 +187,10 @@ func (w *webview) Navigate(url string) {
 	s := C.CString(url)
 	defer C.free(unsafe.Pointer(s))
 	C.webview_navigate(w.w, s)
+}
+
+func (w *webview) SetDecorated(decorated bool) {
+	C.webview_set_decorated(w.w, boolToInt(decorated))
 }
 
 func (w *webview) SetTitle(title string) {
